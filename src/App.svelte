@@ -44,7 +44,7 @@
 
   let testcount = 100;
 
-  let interval = "100";
+  let interval = 100;
 
   let radonRegex = `tt00[1-9]{5}`;
 
@@ -111,6 +111,9 @@
     validResult = false;
 
     for (let i = 0; i < testcount; i++) {
+      // sleep for interval milliseconds
+      await new Promise((resolve) => setTimeout(resolve, interval));
+
       // generate a random value
       const randomValue = new RandExp(radonRegex).gen();
 
@@ -126,6 +129,7 @@
           result.bytesRead = data.bytesRead;
           result.totalRequests = data.stats.totalRequests;
           result.totalBytes = data.stats.totalBytes;
+          result.randomValue = randomValue;
           $testResult = [...$testResult, result];
           $timeTaken = [...$timeTaken, result.timeTaken];
           $bytesRead = [...$bytesRead, result.bytesRead];
