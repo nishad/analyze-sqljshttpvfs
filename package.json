@@ -1,0 +1,40 @@
+{
+  "name": "sql.js-httpvfs-analyser",
+  "private": true,
+  "author": {
+    "name": "Nishad Thalhath"
+  },
+  "version": "0.1.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@popperjs/core": "^2.11.6",
+    "@sveltejs/vite-plugin-svelte": "^1.1.0",
+    "autoprefixer": "^10.4.7",
+    "classnames": "^2.3.2",
+    "flowbite": "^1.5.3",
+    "flowbite-svelte": "^0.27.11",
+    "postcss": "^8.4.14",
+    "postcss-load-config": "^4.0.1",
+    "svelte": "^3.52.0",
+    "svelte-preprocess": "^4.10.7",
+    "tailwindcss": "^3.1.5",
+    "vite": "^3.2.0"
+  },
+  "dependencies": {
+    "@novacbn/svelte-codejar": "^0.1.2",
+    "file-saver": "^2.0.5",
+    "layercake": "^7.1.0",
+    "lucide-svelte": "^0.95.0",
+    "mathjs": "^11.3.3",
+    "p-time": "^3.0.0",
+    "papaparse": "^5.3.2",
+    "prismjs": "^1.29.0",
+    "randexp": "^0.5.3",
+    "sql.js-httpvfs": "^0.8.12"
+  }
+}
