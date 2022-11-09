@@ -67,21 +67,7 @@
   );
   const wasmUrl = new URL("sql.js-httpvfs/dist/sql-wasm.wasm", import.meta.url);
 
-  async function queryDb(sqlQuery) {
-    const worker = await createDbWorker(
-      [
-        {
-          from: "inline",
-          config: {
-            serverMode: "full",
-            url: dbUrl,
-            requestChunkSize: Number(pageSize),
-          },
-        },
-      ],
-      workerUrl.toString(),
-      wasmUrl.toString()
-    );
+  async function queryDb(sqlQuery, worker) {
     const result = await worker.db.query(sqlQuery);
     const bytesRead = await worker.worker.bytesRead;
     const stats = await worker.worker.getStats();
@@ -109,6 +95,23 @@
     error = false;
     testing = true;
     validResult = false;
+    let lastSuccesfulBytesRead = 0;
+    let lastSuccesfulRequestCount = 0;
+
+    const worker = await createDbWorker(
+      [
+        {
+          from: "inline",
+          config: {
+            serverMode: "full",
+            url: dbUrl,
+            requestChunkSize: Number(pageSize),
+          },
+        },
+      ],
+      workerUrl.toString(),
+      wasmUrl.toString()
+    );
 
     for (let i = 0; i < testcount; i++) {
       // sleep for interval milliseconds
@@ -120,19 +123,29 @@
       // replace the variable in the query
       const sqlQuery = sqlQueryTemplate.replace("{{var}}", randomValue);
 
-      let queryData = pTime(queryDb)(sqlQuery);
+      let queryData = pTime(queryDb)(sqlQuery, worker);
       await queryData
         .then((data) => {
+          const actualBytesRead = math.subtract(
+            data.bytesRead,
+            lastSuccesfulBytesRead
+          );
+          lastSuccesfulBytesRead = data.bytesRead;
+          const actualRequests = math.subtract(
+            data.stats.totalRequests,
+            lastSuccesfulRequestCount
+          );
+          lastSuccesfulRequestCount = data.stats.totalRequests;
           let result = {};
           result.id = i + 1;
           result.timeTaken = queryData.time;
-          result.bytesRead = data.bytesRead;
-          result.totalRequests = data.stats.totalRequests;
+          result.bytesRead = actualBytesRead;
+          result.totalRequests = actualRequests;
           result.totalBytes = data.stats.totalBytes;
           result.randomValue = randomValue;
           $testResult = [...$testResult, result];
           $timeTaken = [...$timeTaken, result.timeTaken];
-          $bytesRead = [...$bytesRead, result.bytesRead];
+          $bytesRead = [...$bytesRead, actualBytesRead];
           error = false;
           validResult = true;
         })
